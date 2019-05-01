@@ -1,0 +1,198 @@
+package es.uned.lsi.eped.pract2018_2019;
+
+import es.uned.lsi.eped.DataStructures.*;
+
+public class ValueSeq extends Value {
+	private List<Integer> secuencia;
+
+	/* Constructor: recibe un String con el valor numérico */
+	public ValueSeq(String s) {
+		this.secuencia = new List<Integer>();
+		for (int i = 0; i < s.length(); i++) {
+			secuencia.insert(i+1,Integer.valueOf(s.charAt(i))-48);
+		}
+	}
+	
+	/* Método que transforma el valor numérico en un String */
+	public String toString() {
+		String s = "", c;
+		for (int i = 1; i <= this.secuencia.size(); i++) {
+			c = this.secuencia.get(i).toString();
+			s = s + c;
+		}
+		return s;
+	}
+
+	/* Método que modifica el valor numérico llamante, sumándole el valor numérico parámetro */
+	public void addValue(Value n) {
+		Integer suma;
+		int tam1, tam2, tam3, acc = 0;
+		ValueSeq v = (ValueSeq)n;
+		if (v.secuencia.size() > this.secuencia.size()) {
+			tam1 = this.secuencia.size();
+			tam2 = v.secuencia.size();
+			for (int i = 1; i <= tam1; i++) {
+				suma = this.secuencia.get(tam1-i+1) + v.secuencia.get(tam2-i+1) + acc;
+				if (suma > 9) {
+					suma = suma - 10;
+					acc = 1;
+				} else {
+					acc = 0;
+				}
+				this.secuencia.set(tam1-i+1, suma);
+			}
+			tam3 = tam2 - tam1;
+			while (tam3 > 0) {
+				suma = v.secuencia.get(tam3) + acc;
+				if (suma > 9) {
+					suma = 0;
+				} else {
+					acc = 0;
+				}
+				this.secuencia.insert(1, suma);
+				tam3--;
+			}
+			if (acc == 1) {
+				this.secuencia.insert(1, 1);
+			}
+		} else {
+			tam2 = this.secuencia.size();
+			tam1 = v.secuencia.size();
+			for (int i = 1; i <= tam1; i++) {
+				suma = this.secuencia.get(tam2-i+1) + v.secuencia.get(tam1-i+1) + acc;
+				if (suma > 9) {
+					suma = suma - 10;
+					acc = 1;
+				} else {
+					acc = 0;
+				}
+				this.secuencia.set(tam2-i+1, suma);
+			}
+			tam3 = tam2 - tam1;
+			while ((acc == 1) && (tam3 > 0)) {
+				suma = this.secuencia.get(tam3) + acc;
+				if (suma > 9) {
+					suma = 0;
+				} else {
+					acc = 0;
+				}
+				this.secuencia.set(tam3, suma);
+				tam3--;
+			}
+			if (acc == 1) {
+				this.secuencia.insert(1, 1);
+			}
+		}
+	}
+
+	/* Método que modifica el valor numérico llamante, restándole el valor numérico parámetro */
+	/* Sabemos que el mayor es el valor numérico llamante */
+	public void subValue(Value n) {
+		Integer resta;
+		int tam1, tam2, tam3, acc = 0;
+		ValueSeq v = (ValueSeq)n;
+		tam1 = v.secuencia.size();
+		tam2 = this.secuencia.size();
+		for (int i = 1; i <= tam1; i++) {
+			resta = this.secuencia.get(tam2-i+1) - v.secuencia.get(tam1-i+1) - acc;
+			if (resta < 0) {
+				resta = resta + 10;
+				acc = 1;
+			} else {
+				acc = 0;
+			}
+			this.secuencia.set(tam2-i+1, resta);
+		}
+		tam3 = tam2 - tam1;
+		while ((acc == 1) && (tam3 > 0)) {
+			resta = this.secuencia.get(tam3) - acc;
+			if (resta < 0) {
+				resta = 9;
+			} else {
+				acc = 0;
+			}
+			this.secuencia.set(tam3, resta);
+			tam3--;
+		}
+		while ((this.secuencia.get(1) == 0) && (this.secuencia.size() > 1)) {
+			this.secuencia.remove(1);
+		}
+	}
+
+	/* Método que modifica el valor numérico llamante, restándolo del valor numérico parámetro */
+	/* Sabemos que el mayor es el valor numérico parámetro */
+	public void subFromValue(Value n) {
+		Integer resta;
+		int tam1, tam2, tam3, acc = 0;
+		ValueSeq v = (ValueSeq)n;
+		tam1 = this.secuencia.size();
+		tam2 = v.secuencia.size();
+		for (int i = 1; i <= tam1; i++) {
+			resta =  v.secuencia.get(tam2-i+1) - this.secuencia.get(tam1-i+1) - acc;
+			if (resta < 0) {
+				resta = resta + 10;
+				acc = 1;
+			} else {
+				acc = 0;
+			}
+			this.secuencia.set(tam1-i+1, resta);
+		}
+		tam3 = tam2 - tam1;
+		while (tam3 > 0) {
+			resta = v.secuencia.get(tam3) - acc;
+			if (resta < 0) {
+				resta = 9;
+			} else {
+				acc = 0;
+			}
+			this.secuencia.insert(1, resta);
+			tam3--;
+		}
+		while ((this.secuencia.get(1) == 0) && (this.secuencia.size() > 1)) {
+			this.secuencia.remove(1);
+		}
+	}
+
+	/* Método que modifica el valor numérico llamante, multiplicándolo por el valor numérico parámetro */
+	public void multValue(Value n) {
+		int tam1 = this.secuencia.size();
+		int tam2 = ((ValueSeq)n).secuencia.size();
+		int multiplicador, res, acc;
+		for (int i = tam2; i > 0; i--) {
+			multiplicador = ((ValueSeq)n).secuencia.get(tam2);
+			acc = 0;
+			while(tam1 > 0) {
+				res = this.secuencia.get(tam1) * multiplicador + acc;
+				acc = 0;
+				while (res > 9) {
+					res = res - 10;
+					acc++;
+				}
+			}
+		}
+	}
+
+	/* Método que indica si el valor numérico llamante es mayor que el valor numérico parámetro */
+	public boolean greater(Value n) {
+		if (this.secuencia.size() > ((ValueSeq)n).secuencia.size()) {
+			return true;
+		} else if (this.secuencia.size() == ((ValueSeq)n).secuencia.size()) {
+			for (int i = 1; i <= this.secuencia.size(); i++) {
+				if (this.secuencia.get(i) > ((ValueSeq)n).secuencia.get(i)) {
+					return true;
+				} else if (this.secuencia.get(i) < ((ValueSeq)n).secuencia.get(i)) {
+					return false;
+				}
+			}
+			return false;
+		} else {
+			return false;
+		}
+	}
+
+	/* Método que indica si el valor numérico es cero */
+	public boolean isZero() {
+		return this.secuencia.get(1) == 0;
+	}
+
+}
