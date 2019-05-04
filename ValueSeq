@@ -155,12 +155,18 @@ public class ValueSeq extends Value {
 
 	/* Método que modifica el valor numérico llamante, multiplicándolo por el valor numérico parámetro */
 	public void multValue(Value n) {
-		int tam1 = this.secuencia.size();
-		int tam2 = ((ValueSeq)n).secuencia.size();
-		int multiplicador, res, acc;
-		for (int i = tam2; i > 0; i--) {
-			multiplicador = ((ValueSeq)n).secuencia.get(tam2);
+		int tam1, tam2, tam3, tam4, tam5, multiplicador, res, acc, suma;
+		List<Integer> parcial;
+		List<Integer> total = new List<Integer>(this.secuencia);
+		tam2 = ((ValueSeq)n).secuencia.size();
+		for (int i = 1; i <= total.size(); i++) {
+			total.set(i, 0);
+		}
+		for (int i = 0; i < tam2; i++) {
+			multiplicador = ((ValueSeq)n).secuencia.get(tam2-i);
 			acc = 0;
+			tam1 = this.secuencia.size();
+			parcial = new List<Integer>(this.secuencia);
 			while(tam1 > 0) {
 				res = this.secuencia.get(tam1) * multiplicador + acc;
 				acc = 0;
@@ -168,8 +174,44 @@ public class ValueSeq extends Value {
 					res = res - 10;
 					acc++;
 				}
+				parcial.set(tam1, res);
+				tam1--;
+			}
+			if (acc > 0) {
+				parcial.insert(1, acc);
+			}
+			for (int j = 0; j < i; j++) {
+				parcial.insert(parcial.size()+1, 0);
+			}
+			tam3 = total.size();
+			tam4 = parcial.size();
+			acc = 0;
+			for (int j = 1; j <= tam3; j++) {
+				suma = total.get(tam3-j+1) + parcial.get(tam4-j+1) + acc;
+				if (suma > 9) {
+					suma = suma - 10;
+					acc = 1;
+				} else {
+					acc = 0;
+				}
+				total.set(tam3-j+1, suma);
+			}
+			tam5 = tam4 - tam3;
+			while (tam5 > 0) {
+				suma = parcial.get(tam5) + acc;
+				if (suma > 9) {
+					suma = 0;
+				} else {
+					acc = 0;
+				}
+				total.insert(1, suma);
+				tam5--;
+			}
+			if (acc == 1) {
+				total.insert(1, 1);
 			}
 		}
+		this.secuencia = total;
 	}
 
 	/* Método que indica si el valor numérico llamante es mayor que el valor numérico parámetro */
